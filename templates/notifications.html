@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .notification {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+        .notification.error {
+            background-color: #ffe6e6;
+            border-color: #ff9999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Notificaciones</h1>
+        {% if notifications %}
+            {% for notification in notifications %}
+                <div class="notification{% if 'error' in notification %} error{% endif %}">
+                    <pre>{{ notification|tojson(indent=4) }}</pre>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No hay notificaciones.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
