@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
@@ -24,15 +24,15 @@ jobs:
           pip install -r requirements.txt
           
   deploy:
-    runs-on: windows-latest
     needs: [build]
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install ngrok
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Deploy to DigitalOcean
+        if: ${{ github.event_name == 'push' }}
+        env:
+          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
         run: |
-          Invoke-WebRequest -Uri "https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip" -OutFile "ngrok.zip"
-          Expand-Archive -Path "ngrok.zip" -DestinationPath "$env:USERPROFILE\ngrok"
-          Move-Item "$env:USERPROFILE\ngrok\ngrok.exe" "$env:USERPROFILE\ngrok"
-          $env:Path += ";$env:USERPROFILE\ngrok"
+          curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" https://api.digitalocean.com/v2/apps/$APP_ID/deployments
